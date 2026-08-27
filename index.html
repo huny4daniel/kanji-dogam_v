@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>상용한자 도감</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>상용한자 도감 <span class="total-badge">2136</span></h1>
+
+  <div class="progress">
+    <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+    <span id="progressText">0 / 2136 (0%)</span>
+  </div>
+
+  <div class="controls">
+    <label>
+      정렬
+      <select id="sortSelect">
+        <option value="grade">학년별</option>
+        <option value="strokes">획수순</option>
+        <option value="jlpt">JLPT 급수순</option>
+        <option value="cert">한자급수순</option>
+        <option value="kr">가나다순(한국음)</option>
+      </select>
+    </label>
+
+    <label>
+      상태
+      <select id="filterSelect">
+        <option value="all">전체</option>
+        <option value="learned">외운 것만</option>
+        <option value="unlearned">안 외운 것만</option>
+      </select>
+    </label>
+
+    <input id="searchInput" type="text" placeholder="한자 또는 읽기 검색" autocomplete="off">
+
+    <label class="quick-check-toggle">
+      <input type="checkbox" id="quickCheckToggle">
+      빠른 체크 모드
+    </label>
+
+    <button id="quizOpenBtn" class="btn">퀴즈</button>
+  </div>
+</header>
+
+<main>
+  <div id="grid" class="grid"></div>
+</main>
+
+<div id="modalOverlay" class="modal-overlay hidden">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button id="modalClose" class="modal-close" aria-label="닫기">&times;</button>
+    <div class="modal-kanji" id="modalKanji"></div>
+
+    <label class="learned-toggle">
+      <input type="checkbox" id="learnedCheckbox">
+      외운 것으로 표시
+    </label>
+
+    <dl class="modal-info">
+      <dt>학년</dt><dd id="modalGrade"></dd>
+      <dt>획수</dt><dd id="modalStrokes"></dd>
+      <dt>JLPT</dt><dd id="modalJlpt"></dd>
+      <dt>음독/훈독</dt><dd id="modalReadings"></dd>
+      <dt>뜻(영어)</dt><dd id="modalMeaning"></dd>
+      <dt>한국 한자음</dt><dd id="modalKrReading"></dd>
+      <dt>한자검정 급수</dt><dd id="modalKrCert"></dd>
+      <dt>예시 단어</dt><dd id="modalExamples"></dd>
+    </dl>
+  </div>
+</div>
+
+<div id="quizOverlay" class="modal-overlay hidden">
+  <div class="modal quiz-modal" role="dialog" aria-modal="true">
+    <button id="quizClose" class="modal-close" aria-label="닫기">&times;</button>
+
+    <div id="quizSetup">
+      <h2>퀴즈 모드</h2>
+
+      <div class="quiz-scope-options">
+        <label><input type="radio" name="quizScope" value="group" checked> 그룹별로</label>
+        <label><input type="radio" name="quizScope" value="all"> 전체 (모르는 것 우선)</label>
+        <label><input type="radio" name="quizScope" value="known"> 알고 있는 것 중에서</label>
+      </div>
+
+      <div id="quizGroupPicker" class="quiz-group-picker">
+        <label>
+          기준
+          <select id="quizGroupDim">
+            <option value="grade">학년</option>
+            <option value="strokes">획수</option>
+            <option value="jlpt">JLPT</option>
+            <option value="cert">한자급수</option>
+          </select>
+        </label>
+        <label>
+          그룹
+          <select id="quizGroupValue"></select>
+        </label>
+      </div>
+
+      <p id="quizPoolInfo" class="quiz-pool-info"></p>
+
+      <button id="quizStart" class="btn btn-accent">시작</button>
+    </div>
+
+    <div id="quizQuestion" class="hidden">
+      <p class="quiz-progress-text" id="quizProgressText"></p>
+      <div class="quiz-kanji" id="quizKanji"></div>
+
+      <input type="text" id="quizInput" placeholder="훈 음 입력 (예: 날 출)" autocomplete="off">
+
+      <div class="quiz-actions">
+        <button id="quizSubmit" class="btn btn-accent">확인</button>
+        <button id="quizDontKnow" class="btn">모름</button>
+        <button id="quizNext" class="btn hidden">다음 문제</button>
+      </div>
+
+      <div id="quizFeedback" class="quiz-feedback hidden"></div>
+    </div>
+
+    <div id="quizDone" class="hidden">
+      <p id="quizDoneText"></p>
+      <div id="quizWrongList" class="quiz-wrong-list"></div>
+      <button id="quizRestart" class="btn btn-accent">다시 설정</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

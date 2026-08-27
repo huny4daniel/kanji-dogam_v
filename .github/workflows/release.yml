@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 정적 파일 압축
+        run: |
+          zip -r "KanjiDogam_${{ github.ref_name }}.zip" index.html app.js data.js style.css
+
+      - name: 같은 부버전 기존 릴리즈 삭제
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          # v1.2.3 → 1.2 (major.minor 추출)
+          MINOR=$(echo "$TAG" | sed 's/^v//' | cut -d. -f1-2)
+
+          # 전체 릴리즈 목록에서 같은 부버전 찾기
+          gh release list --repo ${{ github.repository }} --limit 100 \
+            --json tagName --jq '.[].tagName' | while read t; do
+            TM=$(echo "$t" | sed 's/^v//' | cut -d. -f1-2)
+            if [ "$TM" = "$MINOR" ] && [ "$t" != "$TAG" ]; then
+              echo "기존 릴리즈 삭제: $t"
+              gh release delete "$t" --yes --repo ${{ github.repository }}
+            fi
+          done
+
+      - name: 릴리즈 생성 및 zip 첨부
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          files: KanjiDogam_${{ github.ref_name }}.zip
